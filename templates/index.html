@@ -4,92 +4,196 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IPsecGuard - VPN Security Analyzer</title>
-    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    
-    <!-- NAYA: html2pdf library ka link yahan add kiya hai -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
-<body class="bg-light">
+<body class="bg-dark text-light">
     
-    <!-- Navigation Bar -->
-    <nav class="navbar navbar-dark bg-dark">
+    <nav class="navbar navbar-dark bg-black border-bottom border-secondary">
         <div class="container">
-            <a class="navbar-brand" href="/">🛡️ IPsecGuard</a>
-            <span class="navbar-text text-white">by Byte Crews (AISSMS IOIT)</span>
+            <!-- IPsecGuard Custom Logo (LEFT SIDE FIXED) -->
+        <a class="navbar-brand fw-bold d-flex align-items-center gap-2" href="/">
+            <img src="{{ url_for('static', filename='IPsecGuard_logo.png') }}" alt="IPsecGuard Logo" class="nav-logo">
+            <span style="letter-spacing: 1px; font-size: 1.2rem; color: #f8fafc;">IPsecGuard</span>
+        </a>
+            <!-- Byte Crews Logo -->
+<span class="navbar-text ms-lg-3 border-start border-secondary ps-lg-3 mt-2 mt-lg-0 d-flex align-items-center">
+    <img src="{{ url_for('static', filename='byte_crews_logo.png') }}" alt="Byte Crews Logo" class="nav-logo me-2">
+    <span class="fw-bold text-light" style="font-size: 0.9rem; letter-spacing: 0.5px;">Byte Crews</span>
+</span>
         </div>
     </nav>
 
-    <div class="container mt-5">
+    <div class="container mt-4 mb-5">
         <div class="row justify-content-center">
-            <div class="col-md-8">
+            <div class="col-md-9">
                 
                 <!-- Upload Box -->
-                <div class="card shadow-sm mb-4">
-                    <div class="card-header bg-primary text-white">
-                        <h4 class="mb-0">Upload VPN Configuration</h4>
+                <div class="card bg-secondary bg-opacity-10 border-secondary shadow-sm mb-4">
+                    <div class="card-header bg-primary text-white fw-bold">
+                        <h4 class="mb-0">Upload VPN Configuration(s)</h4>
                     </div>
                     <div class="card-body">
-                        <form action="/" method="POST" enctype="multipart/form-data">
+                        <form id="uploadForm" action="/analyzer" method="POST" enctype="multipart/form-data">
                             <div class="mb-3">
-                                <input class="form-control" type="file" name="configFile" accept=".txt,.conf" required>
+                                <input class="form-control bg-dark text-light border-secondary" type="file" name="configFile" multiple accept=".txt,.conf" required>
+                                <small class="text-muted mt-1 d-block">You can select multiple configuration files for batch auditing.</small>
                             </div>
-                            <button type="submit" class="btn btn-primary w-100">Analyze Configuration</button>
+                            <button type="submit" class="btn btn-primary w-100 fw-bold">Analyze Configuration(s)</button>
                         </form>
                     </div>
                 </div>
 
-                <!-- Result Box -->
                 {% if result_ready %}
-                <!-- NAYA: Is card me id="reportBox" lagaya hai taaki JS ise pehchan sake -->
-                <div class="card shadow-sm border-danger mt-4" id="reportBox">
-                    <div class="card-header bg-danger text-white">
-                        <h4 class="mb-0">Security Analysis Report</h4>
-                    </div>
-                    <div class="card-body">
-                        <h5>Security Score: <span class="badge bg-warning text-dark">{{ score }}/100</span></h5>
-                        <hr>
-                        
-                        <h6>🔴 Vulnerabilities Found:</h6>
-                        <ul>
-                            {% for finding in findings_list %}
-                                <li class="text-danger">{{ finding }}</li>
-                            {% endfor %}
-                        </ul>
-                        
-                        <h6 class="mt-3">✅ Remediation (How to fix):</h6>
-                        <ul>
-                            {% for fix in fixes_list %}
-                                <li class="text-success">{{ fix }}</li>
-                            {% endfor %}
-                        </ul>
+                <!-- POPUP MODAL -->
+                <div class="modal fade show" id="scoreModal" tabindex="-1" style="display: none; background: rgba(0,0,0,0.85);" aria-modal="true" role="dialog">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content bg-dark text-light custom-popup shadow-lg">
+                            <div class="modal-header border-secondary">
+                                <h5 class="modal-title fw-bold {% if avg_score >= 80 %}color-safe{% elif avg_score >= 50 %}color-warn{% else %}color-danger{% endif %}">
+                                    {% if avg_score >= 80 %}✅ BATCH STATUS: SAFE
+                                    {% elif avg_score >= 50 %}⚠️ BATCH STATUS: WARNING
+                                    {% else %}❌ BATCH STATUS: IN DANGER{% endif %}
+                                </h5>
+                                <button type="button" class="btn-close btn-close-white" onclick="closeModal()"></button>
+                            </div>
+                            <div class="modal-body text-center py-4">
+                                <h2 class="my-2 text-white">Multi-Router Audit Ready</h2>
+                                <p class="small text-muted">Processed <strong class="text-info">{{ batch_results|length }}</strong> configuration files.</p>
+                                <div class="mt-3 p-3 rounded {% if avg_score >= 80 %}border-safe{% elif avg_score >= 50 %}border-warn{% else %}border-danger{% endif %}" style="background: var(--code-bg); border-width: 2px; border-style: solid;">
+                                    <h3 class="mb-0 fw-bold {% if avg_score >= 80 %}color-safe{% elif avg_score >= 50 %}color-warn{% else %}color-danger{% endif %}">
+                                        Network Average Score: {{ avg_score }}/100
+                                    </h3>
+                                </div>
+                            </div>
+                            <div class="modal-footer border-secondary justify-content-center">
+                                <button type="button" class="btn btn-sm fw-bold px-4 text-white {% if avg_score >= 80 %}bg-btn-safe{% elif avg_score >= 50 %}bg-btn-warn{% else %}bg-btn-danger{% endif %}" style="border: none;" onclick="closeModal()">
+                                    View Detailed Findings
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
+
+                <!-- Role Switcher Toggle Bar -->
+                <div class="d-flex justify-content-between align-items-center mb-3 bg-secondary bg-opacity-25 p-2 rounded border border-secondary">
+                    <span class="text-muted fw-bold small">VIEW MODE:</span>
+                    <div class="btn-group btn-group-sm" role="group">
+                        <button type="button" class="btn btn-outline-info active" id="btnAdmin" onclick="switchView('admin')">⚙️ Admin View (CLI)</button>
+                        <button type="button" class="btn btn-outline-warning" id="btnCiso" onclick="switchView('ciso')">📊 CISO View (Risk/Compliance)</button>
+                    </div>
+                </div>
+
+                <!-- Batch Results Container -->
+                <div id="reportBox">
+                    <h3 class="text-info mb-3">📊 Audit Results (Total Audited: {{ batch_results|length }})</h3>
+                    
+                    {% for scan in batch_results %}
+                    <div class="report-container mb-4">
+                        <div class="report-header">
+                            <div>
+                                <h4 class="mb-1 text-light">Target: {{ scan.filename }}</h4>
+                                <p class="mb-0 text-muted" style="font-size: 13px;">🔒 <strong>Offline-First Security:</strong> Zero Data Exfiltration.</p>
+                            </div>
+                            
+                            <div class="score-badge text-center {% if scan.score >= 80 %}border-safe{% elif scan.score >= 50 %}border-warn{% else %}border-danger{% endif %}">
+                                <div class="{% if scan.score >= 80 %}color-safe{% elif scan.score >= 50 %}color-warn{% else %}color-danger{% endif %}" style="font-size: 24px; font-weight: 800;">
+                                    Score: {{ scan.score }}/100
+                                </div>
+                                <div class="{% if scan.score >= 80 %}color-safe{% elif scan.score >= 50 %}color-warn{% else %}color-danger{% endif %}" style="font-size: 14px; text-transform: uppercase; margin-top: 4px; font-weight: bold;">
+                                    Status: {% if scan.score >= 80 %}✅ SAFE{% elif scan.score >= 50 %}⚠️ WARNING{% else %}❌ IN DANGER{% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <ul style="list-style-type: none; padding: 0;">
+                        {% for i in range(scan.findings|length) %}
+                            <li class="mb-3 p-3 rounded bg-dark border border-secondary">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="vuln-title text-danger fw-bold">⚠️ {{ scan.findings[i] }}</span>
+                                    <span class="badge bg-secondary text-warning compliance-tag">{{ scan.compliance[i] }}</span>
+                                </div>
+                                
+                                <div class="admin-view">
+                                    <small class="text-muted d-block mb-1">Exact CLI Remediation Command:</small>
+                                    <pre><code class="text-success">{{ scan.fixes[i] }}</code></pre>
+                                </div>
+                                
+                                <div class="ciso-view" style="display: none;">
+                                    <small class="text-muted d-block mb-1">Threat Simulation & Business Risk:</small>
+                                    <div class="p-2 rounded bg-black text-warning border border-warning border-opacity-25" style="font-size: 13px;">
+                                        {{ scan.stories[i] }}
+                                    </div>
+                                </div>
+                            </li>
+                        {% endfor %}
+                        </ul>
+                    </div>
+                    {% endfor %}
+                </div>
                 
-                <!-- NAYA: Button ko card ke bahar nikala aur onclick event lagaya -->
-                <button onclick="downloadPDF()" class="btn btn-outline-dark w-100 mt-3">Download PDF Report</button>
+                <!-- Bottom Actions -->
+                <div class="d-flex gap-2 mt-3">
+                    <button onclick="downloadPDF()" class="btn btn-outline-light w-50 fw-bold">📥 Download Audit Report (PDF)</button>
+                    <a href="/analyzer" class="btn btn-outline-secondary w-50 fw-bold text-center" onclick="sessionStorage.removeItem('batch_scanned');">← Scan Another Batch</a>
+                </div>
                 {% endif %}
 
             </div>
         </div>
     </div>
 
-    <!-- NAYA: PDF generate karne ka JavaScript logic -->
     <script>
+        document.getElementById('uploadForm')?.addEventListener('submit', function() {
+            sessionStorage.removeItem('batch_scanned');
+        });
+
+        window.addEventListener('DOMContentLoaded', (event) => {
+            const modal = document.getElementById('scoreModal');
+            if (modal && sessionStorage.getItem('batch_scanned') !== 'true') {
+                modal.style.display = 'block';
+                sessionStorage.setItem('batch_scanned', 'true');
+            }
+        });
+
+        function closeModal() {
+            const modal = document.getElementById('scoreModal');
+            if (modal) modal.style.display = 'none';
+        }
+
+        function switchView(mode) {
+            const adminElements = document.querySelectorAll('.admin-view');
+            const cisoElements = document.querySelectorAll('.ciso-view');
+            const btnAdmin = document.getElementById('btnAdmin');
+            const btnCiso = document.getElementById('btnCiso');
+
+            if (mode === 'admin') {
+                adminElements.forEach(el => el.style.display = 'block');
+                cisoElements.forEach(el => el.style.display = 'none');
+                btnAdmin.classList.add('active', 'btn-info');
+                btnAdmin.classList.remove('btn-outline-info');
+                btnCiso.classList.remove('active', 'btn-warning');
+                btnCiso.classList.add('btn-outline-warning');
+            } else {
+                adminElements.forEach(el => el.style.display = 'none');
+                cisoElements.forEach(el => el.style.display = 'block');
+                btnCiso.classList.add('active', 'btn-warning');
+                btnCiso.classList.remove('btn-outline-warning');
+                btnAdmin.classList.remove('active', 'btn-info');
+                btnAdmin.classList.add('btn-outline-info');
+            }
+        }
+
         function downloadPDF() {
-            // HTML se us dabbe ko select karo jisko PDF banana hai
             var element = document.getElementById('reportBox');
-            
-            // PDF ki settings
             var opt = {
                 margin:       1,
-                filename:     'IPsecGuard_Report.pdf',
+                filename:     'IPsecGuard_Batch_Audit_Report.pdf',
                 image:        { type: 'jpeg', quality: 0.98 },
                 html2canvas:  { scale: 2 },
                 jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
             };
-
-            // PDF generate aur download karo
             html2pdf().set(opt).from(element).save();
         }
     </script>

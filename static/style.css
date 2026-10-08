@@ -1,0 +1,212 @@
+/* ==========================================
+   🛡️ IPSECGUARD ENTERPRISE CYBER THEME (MIDNIGHT)
+   ========================================== */
+html {
+    scroll-behavior: smooth;
+}
+body {
+    padding-top: 70px; /* Adjusts spacing for the fixed navbar */
+}
+:root {
+    --cyber-bg: #090e17; /* Deep midnight slate, not pure black */
+    --cyber-surface: #111827; /* Slightly lighter for cards */
+    --cyber-card: #1f2937;
+    --cyber-border: #374151; /* Subtle borders */
+    --cyber-accent: #0ea5e9; /* Professional Electric Blue */
+    --cyber-accent-glow: rgba(14, 165, 233, 0.3);
+    --cyber-danger: #ef4444; /* Alert Red */
+    --cyber-success: #10b981; /* Emerald Green */
+    --cyber-warning: #f59e0b; /* Warning Amber */
+    --text-primary: #f8fafc;
+    --text-muted: #94a3b8;
+    --code-bg: #030712;
+}
+
+body {
+    background-color: var(--cyber-bg);
+    color: var(--text-primary);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    margin: 0;
+    padding-bottom: 50px;
+}
+
+/* Navbar */
+.navbar {
+    background-color: var(--code-bg) !important;
+    border-bottom: 2px solid var(--cyber-border) !important;
+}
+
+/* Cards */
+.card {
+    background-color: var(--cyber-surface) !important;
+    border: 1px solid var(--cyber-border) !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+}
+
+.card-header.bg-primary {
+    background-color: #1e3a8a !important; /* Deep corporate blue */
+    border-bottom: 1px solid var(--cyber-border);
+}
+
+/* Form Controls */
+.form-control {
+    background-color: var(--code-bg) !important;
+    color: var(--text-primary) !important;
+    border: 1px solid var(--cyber-border) !important;
+    padding: 12px;
+}
+.form-control:focus {
+    border-color: var(--cyber-accent) !important;
+    box-shadow: 0 0 0 0.25rem var(--cyber-accent-glow);
+    color: var(--text-primary) !important;
+}
+
+/* Report Containers */
+.report-container {
+    background-color: var(--cyber-surface);
+    border: 1px solid var(--cyber-border);
+    border-radius: 10px;
+    padding: 28px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+    margin-top: 20px;
+}
+.report-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid var(--cyber-border);
+    padding-bottom: 18px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+/* Score Badge */
+.score-badge {
+    background-color: var(--code-bg);
+    padding: 12px 24px;
+    border-radius: 8px;
+    border-style: solid;
+    border-width: 2px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+    min-width: 180px;
+    transition: transform 0.2s ease;
+}
+.score-badge:hover {
+    transform: translateY(-2px);
+}
+
+/* List Items */
+.report-container li {
+    background: var(--cyber-card) !important;
+    border: 1px solid var(--cyber-border) !important;
+    padding: 18px;
+    border-radius: 8px;
+    margin-bottom: 18px;
+    list-style-type: none;
+    transition: all 0.2s ease;
+}
+.report-container li:hover {
+    border-color: var(--cyber-border) !important;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+}
+
+/* Code Blocks */
+.report-container pre, pre {
+    background-color: var(--code-bg) !important;
+    color: var(--cyber-success) !important;
+    font-family: 'Fira Code', 'Courier New', monospace;
+    font-size: 14px;
+    padding: 14px;
+    border-left: 4px solid var(--cyber-success);
+    border-radius: 6px;
+    overflow-x: auto;
+    margin: 10px 0 0 0;
+    border: 1px solid #1f2937;
+}
+
+/* Buttons */
+.btn-primary {
+    background-color: var(--cyber-accent) !important;
+    color: #fff !important;
+    border: none;
+    font-weight: 600;
+}
+.btn-primary:hover {
+    background-color: #0284c7 !important;
+}
+
+/* Landing Page Features */
+.feature-card {
+    background: rgba(31, 41, 55, 0.5);
+    border: 1px solid var(--cyber-border);
+    transition: all 0.3s ease;
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+}
+.feature-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--cyber-accent);
+    box-shadow: 0 8px 20px var(--cyber-accent-glow);
+}
+.glow-btn {
+    background-color: var(--cyber-accent) !important;
+    border: none !important;
+    box-shadow: 0 0 20px var(--cyber-accent-glow) !important;
+    transition: all 0.3s ease;
+}
+.glow-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 30px rgba(14, 165, 233, 0.6) !important;
+}
+
+/* Glassmorphism Popup Fix */
+.custom-popup {
+    background-color: #111827 !important;
+    background: rgba(17, 24, 39, 0.95) !important;
+    color: #f8fafc !important;
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--cyber-accent) !important;
+    box-shadow: 0 0 30px var(--cyber-accent-glow) !important;
+}
+
+/* ==========================================
+   Dynamic Status Colors (No VS Code Errors)
+   ========================================== */
+.color-safe { color: var(--cyber-success) !important; }
+.color-warn { color: var(--cyber-warning) !important; }
+.color-danger { color: var(--cyber-danger) !important; }
+
+.border-safe { border-color: var(--cyber-success) !important; }
+.border-warn { border-color: var(--cyber-warning) !important; }
+.border-danger { border-color: var(--cyber-danger) !important; }
+
+.bg-btn-safe { background-color: var(--cyber-success) !important; }
+.bg-btn-warn { background-color: #d97706 !important; } /* Darker warning for button text readability */
+.bg-btn-danger { background-color: #dc2626 !important; } /* Darker red for button */
+
+.byte{
+    color: white !important;
+}
+
+.text{
+    color: white !important;
+}
+
+.textt{
+    color: rgb(255, 255, 255) !important;
+}
+/* Perfect Square Logo Styling */
+.nav-logo {
+    height: 48px; /* Height thodi badha di */
+    width: auto;  /* Width auto taaki text dabey nahi */
+    object-fit: contain;
+    border-radius: 6px;
+    background-color: #f8fafc; /* Dark navbar me logo highlight karne ke liye */
+    padding: 4px 4px; /* Left/Right thoda extra space */
+    box-shadow: 0 0 10px rgba(14, 165, 233, 0.3);
+}
