@@ -24,5 +24,5 @@ IPsecGuard is an automated, zero-trust vulnerability detection and compliance ri
 
 1. **Clone the repository:**
    ```bash
-   git clone [https://github.com/your-username/IPsecGuard.git](https://github.com/your-username/IPsecGuard.git)
+   git clone https://github.com/ajinkyagade05-star/IPsecGuard
    cd IPsecGuard
