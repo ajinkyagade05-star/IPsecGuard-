@@ -9,21 +9,27 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 <body class="bg-dark text-light">
-    
-    <nav class="navbar navbar-dark bg-black border-bottom border-secondary">
-        <div class="container">
-            <!-- IPsecGuard Custom Logo (LEFT SIDE FIXED) -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-black border-bottom border-secondary fixed-top">
+    <div class="container">
+        <!-- LEFT SIDE: IPsecGuard Logo & Text -->
         <a class="navbar-brand fw-bold d-flex align-items-center gap-2" href="/">
             <img src="{{ url_for('static', filename='IPsecGuard_logo.png') }}" alt="IPsecGuard Logo" class="nav-logo">
             <span style="letter-spacing: 1px; font-size: 1.2rem; color: #f8fafc;">IPsecGuard</span>
         </a>
-            <!-- Byte Crews Logo -->
-<span class="navbar-text ms-lg-3 border-start border-secondary ps-lg-3 mt-2 mt-lg-0 d-flex align-items-center">
-    <img src="{{ url_for('static', filename='byte_crews_logo.png') }}" alt="Byte Crews Logo" class="nav-logo me-2">
-    <span class="fw-bold text-light" style="font-size: 0.9rem; letter-spacing: 0.5px;">Byte Crews</span>
-</span>
+        
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        
+        <!-- RIGHT SIDE: Navigation & Byte Crews Logo -->
+        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+            <span class="navbar-text ms-lg-3 border-start border-secondary ps-lg-3 mt-2 mt-lg-0 d-flex align-items-center gap-2">
+                <img src="{{ url_for('static', filename='byte_crews_logo.png') }}" alt="Byte Crews Logo" style="height: 38px; width: auto; object-fit: contain; border-radius: 4px;">
+                <span class="fw-bold text-light" style="font-size: 0.95rem; letter-spacing: 0.5px;">Byte Crews</span>
+            </span>
         </div>
-    </nav>
+    </div>
+</nav>
 
     <div class="container mt-4 mb-5">
         <div class="row justify-content-center">
